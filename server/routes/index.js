@@ -19,7 +19,6 @@ router.get('/addfriends', async (req, res) => {
     const friendsAmount = formatedFriends.length;
 
     User.insertMany(formatedFriends).catch((e) => {
-      console.log(e);
       res.status(422);
     });
 
@@ -40,7 +39,6 @@ router.get('/addfriends', async (req, res) => {
       count += friendsAmount;
 
       await User.insertMany(formatedFriends).catch((e) => {
-            console.log(e);
             res.status(422);
       });
       }, iterTime * (i + 1));
@@ -50,6 +48,10 @@ router.get('/addfriends', async (req, res) => {
     console.log(e);
     res.status(422);
   }
+});
+
+router.get('/removefriends', (req, res) => {
+ User.remove({}).then(() => res.send("Removee success")).catch((e) => res.status(422));
 });
 
 module.exports = router;

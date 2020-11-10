@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server"
+    "start": "nodemon server",
+    "docker-build": "docker build -t enigmadie/vknode:v1 ."
   },
   "repository": {
     "type": "git",

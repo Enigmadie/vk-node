@@ -6,7 +6,7 @@ const cors = require('cors');
 const schema = require('./schema/index');
 
 const app = new Express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5050;
 
 require('./db.js');
 
