@@ -51,7 +51,21 @@ router.get('/addfriends', async (req, res) => {
 });
 
 router.get('/removefriends', (req, res) => {
+<<<<<<< HEAD
  User.remove({}).then(() => res.send("Removee success")).catch((e) => res.status(422));
+=======
+  User.remove({}).then(() => res.send("Removee success")).catch((e) => res.status(422));
+>>>>>>> 00ef9d4d6c4032089735d1b9fee38a762a41763f
 });
 
 module.exports = router;
+
+
+
+
+
+
+
+
+
+
