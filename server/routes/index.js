@@ -10,11 +10,10 @@ router.get('/', (req, res) => {
 });
 
 router.get('/addfriends', async (req, res) => {
-  const friendsPath = getFriends(23566160);
+  const friendsPath = getFriends(27828677);
 
   try {
     const { data: { response } } = await axios.get(friendsPath);
-    console.log(response)
 
     const formatedFriends = formatFriends(response.items);
     const friendsAmount = formatedFriends.length;
