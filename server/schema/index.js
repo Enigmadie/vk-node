@@ -1,4 +1,5 @@
 const graphql = require('graphql');
+const User = require('../models/User').default;
 
 const {
   GraphQLObjectType,
@@ -10,8 +11,6 @@ const {
   GraphQLBoolean
 } = graphql;
 
-const User = require('../models/User');
-
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
@@ -20,7 +19,7 @@ const UserType = new GraphQLObjectType({
     first_name: { type: GraphQLString },
     last_name: { type: GraphQLString },
     is_closed: { type: GraphQLBoolean },
-    sex: { type: GraphQLInt },
+    sex: { type: GraphQLString },
     age: { type: GraphQLInt },
     photo_50: { type: GraphQLString },
     photo_100: { type: GraphQLString },
@@ -34,6 +33,10 @@ const Query = new GraphQLObjectType({
 		users: {
 			type: new GraphQLList(UserType),
 			resolve(parent, args) {
+        // console.log(User);
+        // User.find({}).then((res) => {
+        //   return res;
+        // }).catch((e) => console.log(e));
 				return User.find({});
 			}
 		},

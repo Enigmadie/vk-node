@@ -11,6 +11,39 @@ const getAge = (date) => {
 
 const getSex = (num) => num === 1 ? 'female' : 'male';
 
+const formatFriends = (friends) => {
+  return friends
+    .filter((el) => !el.deactivated)
+    .map((el) => {
+      const {
+        first_name,
+        last_name,
+        id,
+        is_closed,
+        sex,
+        bdate,
+        photo_50,
+        photo_100,
+        photo_200_orig,
+      } = el;
+
+      const age = bdate ? getAge(bdate) : null;
+      const sexData = sex ? getSex(sex) : null;
+
+      return {
+        first_name,
+        last_name,
+        id,
+        is_closed,
+        age,
+        sex: sexData,
+        photo_50,
+        photo_100,
+        photo_200_orig,
+      };
+    });
+};
+
 const calculateAge = (birthday) => {
   var ageDifMs = Date.now() - birthday.getTime();
   var ageDate = new Date(ageDifMs);
@@ -20,4 +53,5 @@ const calculateAge = (birthday) => {
 module.exports = {
   getAge,
   getSex,
+  formatFriends,
 };

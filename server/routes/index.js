@@ -3,55 +3,50 @@ const axios = require('axios');
 
 const User = require('../models/User').default;
 const getFriends = require('../services/vkApi').getFriends;
-const { getAge, getSex } = require('../utils/');
+const { formatFriends } = require('../utils/');
 
 router.get('/', (req, res) => {
   res.send('Hello, row');
 });
 
 router.get('/addfriends', async (req, res) => {
-  const friendsPath = getFriends(306512025);
+  const friendsPath = getFriends(23566160);
 
   try {
     const { data: { response } } = await axios.get(friendsPath);
-    const formatedFriends = response.items
-      .filter((el) => !el.deactivated)
-      .map((el) => {
-        const {
-          first_name,
-          last_name,
-          id,
-          is_closed,
-          sex,
-          bdate,
-          photo_50,
-          photo_100,
-          photo_200_orig,
-        } = el;
+    console.log(response)
 
-        const age = bdate ? getAge(bdate) : null;
-        const sexData = sex ? getSex(sex) : null;
+    const formatedFriends = formatFriends(response.items);
+    const friendsAmount = formatedFriends.length;
 
-        return {
-          first_name,
-          last_name,
-          id,
-          is_closed,
-          age,
-          sex: sexData,
-          photo_50,
-          photo_100,
-          photo_200_orig,
-        };
+    User.insertMany(formatedFriends).catch((e) => {
+      console.log(e);
+      res.status(422);
+    });
+
+    let count = 0;
+    let iterTime = 2000;
+
+    formatedFriends
+      .filter(el => el.is_closed === false)
+      .forEach((friend, i) => {
+      setTimeout(async () => {
+      if (count > 10000) {
+        iterTime = 0;
+        return;
+      }
+      const { data: { response } } = await axios.get(getFriends(friend.id));
+      const formatedFriends = formatFriends(response.items);
+      const friendsAmount = formatedFriends.length;
+      count += friendsAmount;
+
+      await User.insertMany(formatedFriends).catch((e) => {
+            console.log(e);
+            res.status(422);
       });
-
-    User.insertMany(formatedFriends)
-      .then(() => {
-        res.send({});
-      }).catch((e) => {
-        console.log(e);
-        res.status(422);
-      });
+      }, iterTime * (i + 1));
+    });
+    res.send("Complete!");
   } catch(e) {
     console.log(e);
     res.status(422);
