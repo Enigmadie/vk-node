@@ -52,4 +52,18 @@ router.get('/addfriends', async (req, res) => {
   }
 });
 
+router.get('/removefriends', (req, res) => {
+  User.remove({}).then(() => res.send("Removee success")).catch((e) => res.status(422));
+});
+
 module.exports = router;
+
+
+
+
+
+
+
+
+
+
