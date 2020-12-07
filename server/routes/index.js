@@ -1,46 +1,69 @@
 const router = require('express').Router();
-const axios = require('axios');
 
-const User = require('../models/User').default;
-const getFriends = require('../services/vkApi').getFriends;
-const { formatFriends } = require('../utils/');
+const axios = require('axios');
+require('dotenv').config();
+
+const sendMessage = require('../services/vkApi').sendMessage;
+
+const WIN_DC = `
+  Твой приз — промокод Delivery Club на 300 руб. \n
+  Чат-бот Pepsi уже прислал его!
+`;
+
+const WIN_OZON = `
+  Твой приз — промокод OZON на 500 руб. \n
+  Чат-бот Pepsi уже прислал его!
+`;
+
+const WIN_IPHONE = `
+  Твой приз — iPhone 12. \n
+  Чат-бот Pepsi напишет тебе, как получить приз!
+`;
+
+const PARTICIPATE_AND_COMIN_SOON_DC_AND_OZON = `
+  Разыгрываем промокоды Delivery Club на 300 руб. и OZON на 500 руб.
+`;
+
+const PARTICIPATE_AND_COMIN_SOON_IPHONE_12 = `
+  Разыгрываем iPhone 12. \n
+  Для участия тебе необходимо быть не младше 16 лет и выполнить хотя бы одно задание в разделе Календарь.
+`;
+
+const NOT_PARTICIPATE = `Твой результат: не участвовал в розыгрыше`;
+
+const BAD_LUCK = `Твой результат: эх, не повезло!`;
 
 router.get('/', (req, res) => {
-  res.send('Hello, row');
+  res.send('Hello, low');
 });
 
-router.get('/addfriends', async (req, res) => {
-  const friendsPath = getFriends(27828677);
+router.post('/bot', (req, res) => {
+  res.send(process.env.CONF_TOKEN);
+});
 
+ const users = [
+   {id: 24870148, message: WIN_DC },
+   {id: 24870148, message: WIN_OZON },
+   {id: 24870148, message: WIN_IPHONE },
+   {id: 24870148, message: PARTICIPATE_AND_COMIN_SOON_IPHONE_12 },
+   {id: 24870148, message: PARTICIPATE_AND_COMIN_SOON_DC_AND_OZON },
+ ];
+
+// const users = [
+//   {id: 306512025, message: WIN_DC },
+//   {id: 173170473, message: WIN_OZON },
+//   {id: 173170473, message: WIN_IPHONE },
+//   {id: 173170473, message: PARTICIPATE_AND_COMIN_SOON_IPHONE_12 },
+//   {id: 173170473, message: PARTICIPATE_AND_COMIN_SOON_DC_AND_OZON },
+// ];
+
+router.get('/gift', async (req, res) => {
   try {
-    const { data: { response } } = await axios.get(friendsPath);
-
-    const formatedFriends = formatFriends(response.items);
-    const friendsAmount = formatedFriends.length;
-
-    User.insertMany(formatedFriends).catch((e) => {
-      res.status(422);
-    });
-
-    let count = 0;
     let iterTime = 2000;
 
-    formatedFriends
-      .filter(el => el.is_closed === false)
-      .forEach((friend, i) => {
+    users.forEach((user, i) => {
       setTimeout(async () => {
-      if (count > 10000) {
-        iterTime = 0;
-        return;
-      }
-      const { data: { response } } = await axios.get(getFriends(friend.id));
-      const formatedFriends = formatFriends(response.items);
-      const friendsAmount = formatedFriends.length;
-      count += friendsAmount;
-
-      await User.insertMany(formatedFriends).catch((e) => {
-            res.status(422);
-      });
+        await axios.get(sendMessage(user.id, user.message));
       }, iterTime * (i + 1));
     });
     res.send("Complete!");
@@ -48,14 +71,6 @@ router.get('/addfriends', async (req, res) => {
     console.log(e);
     res.status(422);
   }
-});
-
-router.get('/removefriends', (req, res) => {
-<<<<<<< HEAD
- User.remove({}).then(() => res.send("Removee success")).catch((e) => res.status(422));
-=======
-  User.remove({}).then(() => res.send("Removee success")).catch((e) => res.status(422));
->>>>>>> 00ef9d4d6c4032089735d1b9fee38a762a41763f
 });
 
 module.exports = router;

@@ -9,6 +9,6 @@ WORKDIR /opt/server
 
 COPY ./ /opt/server/
 
-EXPOSE 5050
+EXPOSE 5060
 
 CMD npm start
